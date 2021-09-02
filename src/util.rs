@@ -390,14 +390,16 @@ where
             ptr::write(ud as *mut WrappedError, WrappedError(err));
             get_error_metatable(state);
             ffi::lua_setmetatable(state, -2);
-            ffi::lua_error(state)
+            ffi::lua_error(state);
+            panic!("lua_error");
         }
         Err(p) => {
             ffi::lua_settop(state, 1);
             ptr::write(ud as *mut WrappedPanic, WrappedPanic(Some(p)));
             get_panic_metatable(state);
             ffi::lua_setmetatable(state, -2);
-            ffi::lua_error(state)
+            ffi::lua_error(state);
+            panic!("lua_error");
         }
     }
 }
@@ -461,9 +463,11 @@ pub unsafe extern "C" fn safe_pcall(state: *mut ffi::lua_State) -> c_int {
     if top == 0 {
         ffi::lua_pushstring(state, cstr!("not enough arguments to pcall"));
         ffi::lua_error(state);
+        panic!("lua_error");
     } else if ffi::lua_pcall(state, top - 1, ffi::LUA_MULTRET, 0) != ffi::LUA_OK {
         if is_wrapped_panic(state, -1) {
             ffi::lua_error(state);
+            panic!("lua_error");
         }
         ffi::lua_pushboolean(state, 0);
         ffi::lua_insert(state, -2);
@@ -496,6 +500,7 @@ pub unsafe extern "C" fn safe_xpcall(state: *mut ffi::lua_State) -> c_int {
     if top < 2 {
         ffi::lua_pushstring(state, cstr!("not enough arguments to xpcall"));
         ffi::lua_error(state);
+        panic!("lua_error");
     }
 
     ffi::lua_pushvalue(state, 2);
@@ -507,6 +512,7 @@ pub unsafe extern "C" fn safe_xpcall(state: *mut ffi::lua_State) -> c_int {
     if res != ffi::LUA_OK {
         if is_wrapped_panic(state, -1) {
             ffi::lua_error(state);
+            panic!("lua_error");
         }
         ffi::lua_pushboolean(state, 0);
         ffi::lua_insert(state, -2);
@@ -643,7 +649,8 @@ pub unsafe fn init_error_registry(state: *mut ffi::lua_State) {
         ptr::write(ud, WrappedError(Error::CallbackDestructed));
         get_error_metatable(state);
         ffi::lua_setmetatable(state, -2);
-        ffi::lua_error(state)
+        ffi::lua_error(state);
+        panic!("lua_error");
     }
 
     ffi::lua_pushlightuserdata(

@@ -182,14 +182,14 @@ extern "C" {
 
     pub fn lua_settable(state: *mut lua_State, index: c_int);
     pub fn lua_rawset(state: *mut lua_State, index: c_int);
-    pub fn lua_setmetatable(state: *mut lua_State, index: c_int);
+    pub fn lua_setmetatable(state: *mut lua_State, index: c_int) -> c_int;
 
     pub fn lua_len(state: *mut lua_State, index: c_int);
     pub fn lua_rawlen(state: *mut lua_State, index: c_int) -> lua_Unsigned;
     pub fn lua_next(state: *mut lua_State, index: c_int) -> c_int;
     pub fn lua_rawequal(state: *mut lua_State, index1: c_int, index2: c_int) -> c_int;
 
-    pub fn lua_error(state: *mut lua_State) -> !;
+    pub fn lua_error(state: *mut lua_State) -> c_int; // !;
     pub fn lua_atpanic(state: *mut lua_State, panic: lua_CFunction) -> lua_CFunction;
     pub fn lua_gc(state: *mut lua_State, what: c_int, ...) -> c_int;
     pub fn lua_getinfo(state: *mut lua_State, what: *const c_char, ar: *mut lua_Debug) -> c_int;

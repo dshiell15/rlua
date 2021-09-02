@@ -72,6 +72,9 @@
 #define LUA_USE_C89	/* broadly, Windows is C89 */
 #endif
 
+/* #if defined(LUA_USE_WASI) */
+/* #define LUA_USE_POSIX */
+/* #endif */
 
 #if defined(LUA_USE_LINUX)
 #define LUA_USE_POSIX

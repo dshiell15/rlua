@@ -9,8 +9,9 @@
 
 #include "lprefix.h"
 
-
+#if !defined(LUA_USE_WASI)
 #include <setjmp.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 
@@ -66,6 +67,11 @@
 #define LUAI_THROW(L,c)		_longjmp((c)->b, 1)
 #define LUAI_TRY(L,c,a)		if (_setjmp((c)->b) == 0) { a }
 #define luai_jmpbuf		jmp_buf
+
+#elif defined(LUA_USE_WASI)
+#define LUAI_THROW(L,c)
+#define LUAI_TRY(L,c,a)         { a }
+#define luai_jmpbuf             int /* dummy variable */
 
 #else							/* }{ */
 

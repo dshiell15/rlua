@@ -10,10 +10,18 @@ fn main() {
         let target_os = env::var("CARGO_CFG_TARGET_OS");
         let target_family = env::var("CARGO_CFG_TARGET_FAMILY");
 
+        println!(
+            "target_os={:?}, target_family={:?}",
+            target_os, target_family
+        );
+
         let mut config = cc::Build::new();
 
         if target_os == Ok("linux".to_string()) {
             config.define("LUA_USE_LINUX", None);
+        } else if target_os == Ok("wasi".to_string()) {
+            config.define("_WASI_EMULATED_SIGNAL", None);
+            config.define("LUA_USE_WASI", None);
         } else if target_os == Ok("macos".to_string()) {
             config.define("LUA_USE_MACOSX", None);
         } else if target_family == Ok("unix".to_string()) {
