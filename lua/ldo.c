@@ -141,6 +141,7 @@ l_noret luaD_throw (lua_State *L, int errcode) {
       abort();
     }
   }
+  __builtin_unreachable();
 }
 
 

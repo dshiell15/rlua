@@ -125,7 +125,7 @@
         e = mkstemp(b); \
         if (e != -1) close(e); \
         e = (e == -1); }
-
+  
 #else				/* }{ */
 
 /* ISO C definitions */
@@ -138,7 +138,7 @@
 /* }================================================================== */
 
 
-
+#if !defined(LUA_USE_WASI)
 static int os_execute (lua_State *L) {
   const char *cmd = luaL_optstring(L, 1, NULL);
   int stat;
@@ -151,6 +151,12 @@ static int os_execute (lua_State *L) {
     return 1;
   }
 }
+#else
+static int os_execute (lua_State *L) {
+  return luaL_error(L, "os_execute is unsupported");
+}
+
+#endif
 
 
 static int os_remove (lua_State *L) {
@@ -165,7 +171,7 @@ static int os_rename (lua_State *L) {
   return luaL_fileresult(L, rename(fromname, toname) == 0, NULL);
 }
 
-
+#if !defined(LUA_USE_WASI)
 static int os_tmpname (lua_State *L) {
   char buff[LUA_TMPNAMBUFSIZE];
   int err;
@@ -175,7 +181,12 @@ static int os_tmpname (lua_State *L) {
   lua_pushstring(L, buff);
   return 1;
 }
+#else
+static int os_tmpname (lua_State *L) {
+  return luaL_error(L, "os_tmpnam is unsupported");
+}
 
+#endif
 
 static int os_getenv (lua_State *L) {
   lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */

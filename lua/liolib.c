@@ -290,13 +290,17 @@ static int io_popen (lua_State *L) {
   return (p->f == NULL) ? luaL_fileresult(L, 0, filename) : 1;
 }
 
-
+#if !defined(LUA_USE_WASI)
 static int io_tmpfile (lua_State *L) {
   LStream *p = newfile(L);
   p->f = tmpfile();
   return (p->f == NULL) ? luaL_fileresult(L, 0, NULL) : 1;
 }
-
+#else
+static int io_tmpfile (lua_State *L) {
+  return luaL_error(L, "io_tmpfile is unsupported");
+}
+#endif
 
 static FILE *getiofile (lua_State *L, const char *findex) {
   LStream *p;
